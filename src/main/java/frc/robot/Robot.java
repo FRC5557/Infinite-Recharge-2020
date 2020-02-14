@@ -1,0 +1,284 @@
+/*----------------------------------------------------------------------------*/
+/* Copyright (c) 2017-2019 FIRST. All Rights Reserved.                        */
+/* Open Source Software - may be modified and shared by FRC teams. The code   */
+/* must be accompanied by the FIRST BSD license file in the root directory of */
+/* the project.                                                               */
+/*----------------------------------------------------------------------------*/
+
+package frc.robot;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.Map;
+
+import org.frcteam2910.common.math.Rotation2;
+import org.frcteam2910.common.math.Vector2;
+import org.frcteam2910.common.robot.UpdateManager;
+import org.frcteam2910.common.control.MaxAccelerationConstraint;
+import org.frcteam2910.common.control.MaxVelocityConstraint;
+import org.frcteam2910.common.control.Path;
+import org.frcteam2910.common.control.SplinePathBuilder;
+import org.frcteam2910.common.control.Trajectory;
+import org.frcteam2910.common.control.TrajectoryConstraint;
+// import org.frcteam2910.common.robot.subsystems.SubsystemManager;
+// import org.frc
+// import org
+import org.frcteam2910.common.io.PathReader;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.commands.DriveCommand;
+import frc.robot.commands.FollowTrajectoryCommand;
+import frc.robot.commands.IntakeInCommand;
+import frc.robot.commands.LaunchUpperForTimeCommand;
+import frc.robot.commands.RotateAndAimCommandGroup;
+import frc.robot.commands.RotateToAngleCommand;
+import frc.robot.commands.RotateToTargetCommand;
+import frc.robot.commands.autonomous.*;
+import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.SpinnerSubsystem;
+import frc.robot.subsystems.swerve.DrivetrainSubsystem;
+
+/**
+ * The VM is configured to automatically run this class, and to call the
+ * functions corresponding to each mode, as described in the TimedRobot
+ * documentation. If you change the name of this class or the package after
+ * creating this project, you must also update the build.gradle file in the
+ * project.
+ */
+public class Robot extends TimedRobot {
+  private Command m_autonomousCommand;
+
+  private static RobotContainer robotContainer;
+
+  private static final double UPDATE_DT = 5.0e-3;
+
+  private double lastTimestamp = 0.0;
+  FollowTrajectoryCommand autonCommand;
+  Trajectory autonTrajectory;
+
+  private final UpdateManager updateManager = new UpdateManager(
+      DrivetrainSubsystem.getInstance()
+    );  
+
+
+  /**
+   * This function is run when the robot is first started up and should be used
+   * for any initialization code.
+   */
+  @Override
+  public void robotInit() {
+    // Instantiate our RobotContainer. This will perform all our button bindings,
+    // and put our
+    // autonomous chooser on the dashboard.
+    robotContainer = new RobotContainer();
+
+    this.setupAutonomousOptions();
+
+    // SpinnerSubsystem.getInstance();
+
+    // DrivetrainSubsystem.getInstance().drive(Vector2.ZERO, 0, true);
+    Limelight.getInstance().disableLEDs();
+    Limelight.getInstance().enableDriverMode();
+    
+    // First we have to generate our path. We will use the SplinePathBuilder to generate a path using splines.
+    Path path = new SplinePathBuilder(Vector2.ZERO, Rotation2.ZERO, Rotation2.ZERO)
+    // When using hermite splines we must specify a position and a heading. We can also optionally specify
+    // a rotation.
+    .hermite(new Vector2(5, 5), Rotation2.ZERO, Rotation2.ZERO)
+    // .hermite(new Vector2(-1.0, -1.0), Rotation2.fromDegrees(90), Rotation2.ZERO)
+    // .hermite(new Vector2(50.0, 50.0), Rotation2.fromDegrees(180.0), Rotation2.ZERO)
+    // Once we've added all the splines we can then build the path.
+    .build();
+
+// Once we have our path we need to then specify some constraints for our trajectory.
+TrajectoryConstraint[] constraints = {
+    // Lets specify a maximum acceleration of 10.0 units/s^2
+    new MaxAccelerationConstraint(2.0),
+    // And lets have a maximum velocity of 12.0 units/s
+    new MaxVelocityConstraint(5.0)
+};
+
+  // Now that we have both our path and our constraints we can create a trajectory.
+  // When creating a trajectory we pass in our path and our constraints.
+  // We also have to pass in a third parameter called sample distance. This sample distance
+  // determines how often the trajectory makes sure that the velocity and acceleration are within
+  // the limits determined by the constraints. Smaller values will create a smoother and more accurate path
+  // but they will take much longer to generate.
+  autonTrajectory = new Trajectory(path, constraints, 1.0e-2);
+  }
+
+  /**
+   * This function is called every robot packet, no matter the mode. Use this for
+   * items like diagnostics that you want ran during disabled, autonomous,
+   * teleoperated and test.
+   *
+   * <p>
+   * This runs after the mode specific periodic functions, but before LiveWindow
+   * and SmartDashboard integrated updating.
+   */
+  @Override
+  public void robotPeriodic() {
+    // Runs the Scheduler. This is responsible for polling buttons, adding
+    // newly-scheduled
+    // commands, running already-scheduled commands, removing finished or
+    // interrupted commands,
+    // and running subsystem periodic() methods. This must be called from the
+    // robot's periodic
+    // block in order for anything in the Command-based framework to work.
+    CommandScheduler.getInstance().run();
+  }
+
+  /**
+   * This function is called once each time the robot enters Disabled mode.
+   */
+  @Override
+  public void disabledInit() {
+  }
+
+  @Override
+  public void disabledPeriodic() {
+  }
+
+  /**
+   * This autonomous runs the autonomous command selected by your
+   * {@link RobotContainer} class.
+   */
+  @Override
+  public void autonomousInit() {
+
+    // autonCommand = new FollowTrajectoryCommand(autonTrajectory);
+    // autonCommand.schedule();
+
+    /**
+     * so for 5 ball auto the sequence should be as follows: 1. start on auto line
+     * near enemy trench 2. move back a given amount of rotations while running
+     * intake 3. Rotate 180 degrees / PI 4. once reached, move forward a given
+     * amount of rotations still behind the auto line 5. Aim at an angle towards
+     * power port 6.shoot for x amount of seconds
+     */
+
+    // worst comes to worst and we R E A L L Y wanna get something working, we can
+    // always just switch to time based
+
+
+    // new SequentialCommandGroup(
+    // new ParallelRaceGroup(new MoveDirectionForDistanceCommand(10,
+    // Direction.BACKWARD), new IntakeInCommand()),
+    // new RotateToAngleCommand(Math.PI), new MoveDirectionForDistanceCommand(7,
+    // Direction.FORWARD),
+    // new RotateToTargetCommand(), new LaunchUpperForTimeCommand(5)
+
+    // );
+    // new FollowTrajectoryCommand(autonTrajectory).schedule();
+    new SequentialCommandGroup(new MoveDirectionForTimeCommand(1.2, Direction.BACKWARD), new
+      RotateToTargetCommand(), new MoveDirectionForTimeCommand(0.6, Direction.FORWARD), new RotateToTargetCommand()).schedule();  
+  }
+
+  /**
+   * This function is called periodically during autonomous.
+   */
+  @Override
+  public void autonomousPeriodic() {
+    // System.out.println(DrivetrainSubsystem.getInstance().getSwerveModules()[0].getDriveMotor().getEncoder().getCountsPerRevolution());
+    // System.out.println(DrivetrainSubsystem.getInstance().getSwerveModules()[2].getDriveMotor().getEncoder().getPosition());
+  }
+
+  @Override
+  public void teleopInit() {
+    // This makes sure that the autonomous stops running when
+    // teleop starts running. If you want the autonomous to
+    // continue until interrupted by another command, remove
+    // this line or comment it out.
+    if (m_autonomousCommand != null) {
+      m_autonomousCommand.cancel();
+    }
+
+    updateManager.startLoop(5.0e-3);
+
+    
+    // Limelight.getInstance().enableDriverMode();
+    // Limelight.getInstance().disableLEDs();
+
+    CommandScheduler.getInstance().setDefaultCommand(DrivetrainSubsystem.getInstance(), new DriveCommand());
+
+  }
+
+  /**
+   * This function is called periodically during operator control.
+   */
+  @Override
+  public void teleopPeriodic() {
+    handleGameData();
+  }
+
+  private void handleGameData() {
+    String gameData;
+    gameData = DriverStation.getInstance().getGameSpecificMessage();
+    if (gameData.length() > 0) {
+      switch (gameData.charAt(0)) {
+      case 'B':
+        // Blue case code
+        robotContainer.setSpinnerColor(SpinnerColor.BLUE);
+        break;
+      case 'G':
+        // Green case code
+        robotContainer.setSpinnerColor(SpinnerColor.GREEN);
+        break;
+      case 'R':
+        // Red case code
+        robotContainer.setSpinnerColor(SpinnerColor.RED);
+        break;
+      case 'Y':
+        // Yellow case code
+        robotContainer.setSpinnerColor(SpinnerColor.YELLOW);
+        break;
+      default:
+        // This is corrupt data
+        robotContainer.setSpinnerColor(SpinnerColor.UNKNOWN);
+        break;
+      }
+    } else {
+      // Code for no data received yet
+    }
+  }
+
+  @Override
+  public void testInit() {
+    // Cancels all running commands at the start of test mode.
+    CommandScheduler.getInstance().cancelAll();
+  }
+
+  /**
+   * This function is called periodically during test mode.
+   */
+  @Override
+  public void testPeriodic() {
+  }
+
+  public static RobotContainer getRobotContainer() {
+    return robotContainer;
+  }
+
+  private void setupAutonomousOptions() {
+    ShuffleboardTab tab = Shuffleboard.getTab("competition");
+    SendableChooser<Command> autonomousModes = new SendableChooser<Command>();
+    autonomousModes.setDefaultOption("Start From Left", new AutonomousAimAndLaunchFromLeftCommand());
+    autonomousModes.addOption("Start From Right", new AutonomousAimAndLaunchFromRightCommand());
+    autonomousModes.addOption("Start From Middle", new AutonomousAimAndLaunchFromMiddleCommand());
+    tab.add("Autonomous Mode", autonomousModes).withWidget(BuiltInWidgets.kComboBoxChooser);
+    tab.add("Feet back", 5).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min", 0, "max", 20));
+  }
+}
