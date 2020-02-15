@@ -42,7 +42,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.DriveCommand;
-import frc.robot.commands.FollowTrajectoryCommand;
 import frc.robot.commands.IntakeInCommand;
 import frc.robot.commands.LaunchUpperForTimeCommand;
 import frc.robot.commands.RotateAndAimCommandGroup;
