@@ -11,6 +11,7 @@ import org.frcteam2910.common.math.Vector2;
 
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Direction;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.swerve.DrivetrainSubsystem;
 
@@ -18,14 +19,16 @@ public class RotateToTargetCommand extends CommandBase {
 
   Limelight limelight;
   DrivetrainSubsystem drive;
+  Direction direction;
 
   double kP = 0.001;
 
   /**
    * Creates a new RotateToTargetCommand.
    */
-  public RotateToTargetCommand() {
+  public RotateToTargetCommand(Direction direction) {
     drive = DrivetrainSubsystem.getInstance();
+    this.direction = direction;
     limelight = Limelight.getInstance();
     addRequirements(drive);
   }
@@ -52,8 +55,11 @@ public class RotateToTargetCommand extends CommandBase {
       drive.drive(new Vector2(0, 0), rotation, true);
     } else {
       System.out.println("NO TARGET");
-      // TODO GET IF LEFT OR RIGHT AND ROTATE IN PROPER DIRECTION
-      drive.drive(new Vector2(0, 0), 0.01, true);
+      if (direction == Direction.LEFT) {
+        drive.drive(new Vector2(0, 0), -0.05, true);
+      } else {
+        drive.drive(new Vector2(0, 0), 0.05, true);
+      }
     }
 
   }

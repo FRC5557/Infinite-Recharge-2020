@@ -24,6 +24,8 @@ import org.frcteam2910.common.control.TrajectoryConstraint;
 // import org.frc
 // import org
 import org.frcteam2910.common.io.PathReader;
+
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.Notifier;
@@ -66,13 +68,13 @@ public class Robot extends TimedRobot {
   private static final double UPDATE_DT = 5.0e-3;
 
   private double lastTimestamp = 0.0;
-  FollowTrajectoryCommand autonCommand;
   Trajectory autonTrajectory;
 
-  private final UpdateManager updateManager = new UpdateManager(
-      DrivetrainSubsystem.getInstance()
-    );  
+  private final UpdateManager updateManager = new UpdateManager(DrivetrainSubsystem.getInstance());
 
+  SendableChooser<Command> autonomousModes;
+  Command autonomousCommand;
+  NetworkTableEntry timeBack;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -92,32 +94,6 @@ public class Robot extends TimedRobot {
     // DrivetrainSubsystem.getInstance().drive(Vector2.ZERO, 0, true);
     Limelight.getInstance().disableLEDs();
     Limelight.getInstance().enableDriverMode();
-    
-    // First we have to generate our path. We will use the SplinePathBuilder to generate a path using splines.
-    Path path = new SplinePathBuilder(Vector2.ZERO, Rotation2.ZERO, Rotation2.ZERO)
-    // When using hermite splines we must specify a position and a heading. We can also optionally specify
-    // a rotation.
-    .hermite(new Vector2(5, 5), Rotation2.ZERO, Rotation2.ZERO)
-    // .hermite(new Vector2(-1.0, -1.0), Rotation2.fromDegrees(90), Rotation2.ZERO)
-    // .hermite(new Vector2(50.0, 50.0), Rotation2.fromDegrees(180.0), Rotation2.ZERO)
-    // Once we've added all the splines we can then build the path.
-    .build();
-
-// Once we have our path we need to then specify some constraints for our trajectory.
-TrajectoryConstraint[] constraints = {
-    // Lets specify a maximum acceleration of 10.0 units/s^2
-    new MaxAccelerationConstraint(2.0),
-    // And lets have a maximum velocity of 12.0 units/s
-    new MaxVelocityConstraint(5.0)
-};
-
-  // Now that we have both our path and our constraints we can create a trajectory.
-  // When creating a trajectory we pass in our path and our constraints.
-  // We also have to pass in a third parameter called sample distance. This sample distance
-  // determines how often the trajectory makes sure that the velocity and acceleration are within
-  // the limits determined by the constraints. Smaller values will create a smoother and more accurate path
-  // but they will take much longer to generate.
-  autonTrajectory = new Trajectory(path, constraints, 1.0e-2);
   }
 
   /**
@@ -158,33 +134,8 @@ TrajectoryConstraint[] constraints = {
    */
   @Override
   public void autonomousInit() {
-
-    // autonCommand = new FollowTrajectoryCommand(autonTrajectory);
-    // autonCommand.schedule();
-
-    /**
-     * so for 5 ball auto the sequence should be as follows: 1. start on auto line
-     * near enemy trench 2. move back a given amount of rotations while running
-     * intake 3. Rotate 180 degrees / PI 4. once reached, move forward a given
-     * amount of rotations still behind the auto line 5. Aim at an angle towards
-     * power port 6.shoot for x amount of seconds
-     */
-
-    // worst comes to worst and we R E A L L Y wanna get something working, we can
-    // always just switch to time based
-
-
-    // new SequentialCommandGroup(
-    // new ParallelRaceGroup(new MoveDirectionForDistanceCommand(10,
-    // Direction.BACKWARD), new IntakeInCommand()),
-    // new RotateToAngleCommand(Math.PI), new MoveDirectionForDistanceCommand(7,
-    // Direction.FORWARD),
-    // new RotateToTargetCommand(), new LaunchUpperForTimeCommand(5)
-
-    // );
-    // new FollowTrajectoryCommand(autonTrajectory).schedule();
-    new SequentialCommandGroup(new MoveDirectionForTimeCommand(1.2, Direction.BACKWARD), new
-      RotateToTargetCommand(), new MoveDirectionForTimeCommand(0.6, Direction.FORWARD), new RotateToTargetCommand()).schedule();  
+    autonomousCommand = autonomousModes.getSelected();
+    autonomousCommand.schedule();
   }
 
   /**
@@ -198,19 +149,10 @@ TrajectoryConstraint[] constraints = {
 
   @Override
   public void teleopInit() {
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
+
+    if (autonomousCommand != null) {
+      autonomousCommand.cancel();
     }
-
-    updateManager.startLoop(5.0e-3);
-
-    
-    // Limelight.getInstance().enableDriverMode();
-    // Limelight.getInstance().disableLEDs();
 
     CommandScheduler.getInstance().setDefaultCommand(DrivetrainSubsystem.getInstance(), new DriveCommand());
 
@@ -274,11 +216,24 @@ TrajectoryConstraint[] constraints = {
 
   private void setupAutonomousOptions() {
     ShuffleboardTab tab = Shuffleboard.getTab("competition");
-    SendableChooser<Command> autonomousModes = new SendableChooser<Command>();
-    autonomousModes.setDefaultOption("Start From Left", new AutonomousAimAndLaunchFromLeftCommand());
-    autonomousModes.addOption("Start From Right", new AutonomousAimAndLaunchFromRightCommand());
-    autonomousModes.addOption("Start From Middle", new AutonomousAimAndLaunchFromMiddleCommand());
+    autonomousModes = new SendableChooser<Command>();
+    autonomousModes.setDefaultOption("5 Ball Auto",
+        new SequentialCommandGroup(
+            new ParallelRaceGroup(new MoveDirectionForTimeCommand(1.2, Direction.FORWARD), new IntakeInCommand()),
+            new RotateToTargetCommand(Direction.RIGHT), new MoveDirectionForTimeCommand(0.3, Direction.BACKWARD),
+            new RotateToTargetCommand(Direction.RIGHT), new LaunchUpperForTimeCommand(5)));
+
+    autonomousModes.addOption("Start From Right",
+        new SequentialCommandGroup(new MoveDirectionForTimeCommand(.5, Direction.BACKWARD),
+            new RotateToTargetCommand(Direction.RIGHT), new LaunchUpperForTimeCommand(5)));
+    autonomousModes.addOption("Start From Left",
+        new SequentialCommandGroup(new MoveDirectionForTimeCommand(.5, Direction.BACKWARD),
+            new RotateToTargetCommand(Direction.LEFT), new LaunchUpperForTimeCommand(5)));
+    autonomousModes.addOption("Start From Middle",
+        new SequentialCommandGroup(new MoveDirectionForTimeCommand(.5, Direction.BACKWARD),
+            new RotateToTargetCommand(Direction.LEFT), new LaunchUpperForTimeCommand(5)));
     tab.add("Autonomous Mode", autonomousModes).withWidget(BuiltInWidgets.kComboBoxChooser);
-    tab.add("Feet back", 5).withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min", 0, "max", 20));
+    timeBack = tab.add("Time to move back", 5).withWidget(BuiltInWidgets.kNumberSlider)
+        .withProperties(Map.of("min", .1, "max", 2)).getEntry();
   }
 }

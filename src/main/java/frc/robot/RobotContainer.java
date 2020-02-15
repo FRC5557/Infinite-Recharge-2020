@@ -38,9 +38,7 @@ public class RobotContainer {
 
   DrivetrainSubsystem drivetrain = DrivetrainSubsystem.getInstance();
 
-  private final UpdateManager updateManager = new UpdateManager(
-    drivetrain
-);
+  private final UpdateManager updateManager = new UpdateManager(drivetrain);
 
   public static RobotContainer instance = null;
 
@@ -60,7 +58,6 @@ public class RobotContainer {
     }
 
     updateManager.startLoop(5.0e-3);
-
 
     // Configure the button bindings
     controller.getLeftXAxis().setInverted(false);
@@ -95,7 +92,7 @@ public class RobotContainer {
     // this.controller.getAButton().whileHeld(new GetInRangeAndAimCommand());
 
     // this.controller.getBButton().whileHeld(new RotateToAngleCommand(0));
-    this.controller.getBButton().whileHeld(new RotateToTargetCommand());
+    this.controller.getBButton().whileHeld(new RotateToTargetCommand(Direction.RIGHT));
 
     this.controller.getStartButton().toggleWhenPressed(new SequentialCommandGroup(new LaunchFromDistanceCommand()));
 
