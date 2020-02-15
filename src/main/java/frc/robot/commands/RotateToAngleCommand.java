@@ -45,9 +45,9 @@ public class RotateToAngleCommand extends CommandBase {
     Rotation2 currentGyroAngleRotation = DrivetrainSubsystem.getInstance().getGyroscope().getAngle();
     double currentGyroAngle = currentGyroAngleRotation.toDegrees();
     if (currentGyroAngle > 180) {
-      currentGyroAngle = (360 - currentGyroAngle) * 0.01;
+      currentGyroAngle = (360 - currentGyroAngle) * 0.005;
     } else {
-      currentGyroAngle = (0 - currentGyroAngle) * 0.01;
+      currentGyroAngle = (0 - currentGyroAngle) * 0.005;
     }
 
     DrivetrainSubsystem.getInstance().drive(new Vector2(0, 0), currentGyroAngle, true);

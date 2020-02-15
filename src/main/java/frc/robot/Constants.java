@@ -66,12 +66,16 @@ public final class Constants {
     public static final double BACK_RIGHT_DRIVE_PER_REVOLUTION = 8.214309692382812;
 
     public static final int PRIMARY_JOYSTICK_PORT = 0;
+    public static final int SECONDARY_JOYSTICK_PORT = 0;
 
     public static final int LAUNCHER_MOTOR = 9;
 
     public static final int INTAKE_MOTOR = 10;
 
     public static final int FEEDER_MOTOR = 11;
+
+    public static final int CLIMB_LEFT_MOTOR = 13;
+    public static final int CLIMB_RIGHT_MOTOR = 14;
 
     /*
      * Spinner constants

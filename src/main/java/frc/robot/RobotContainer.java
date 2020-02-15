@@ -33,7 +33,9 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
-  private Controller controller = new XboxController(Constants.PRIMARY_JOYSTICK_PORT);
+  private Controller swerveController = new XboxController(Constants.PRIMARY_JOYSTICK_PORT);
+  private Controller manipulatorController = new XboxController(Constants.SECONDARY_JOYSTICK_PORT);
+
   private SpinnerColor spinnerColor;
 
   DrivetrainSubsystem drivetrain = DrivetrainSubsystem.getInstance();
@@ -57,16 +59,17 @@ public class RobotContainer {
       instance = this;
     }
 
+    // this starts the update thread for swerve drive
     updateManager.startLoop(5.0e-3);
 
-    // Configure the button bindings
-    controller.getLeftXAxis().setInverted(false);
-    controller.getRightXAxis().setInverted(true);
-    controller.getLeftYAxis().setInverted(true);
-    controller.getRightXAxis().setScale(0.45);
+    // Configure the controls for swerve drive
+    swerveController.getLeftXAxis().setInverted(false);
+    swerveController.getRightXAxis().setInverted(true);
+    swerveController.getLeftYAxis().setInverted(true);
+    swerveController.getRightXAxis().setScale(0.45);
 
+    // the following sets up our color system code
     spinnerColor = SpinnerColor.UNKNOWN;
-
     Constants.colorMapping.put(SpinnerColor.BLUE, SpinnerColor.RED);
     Constants.colorMapping.put(SpinnerColor.GREEN, SpinnerColor.YELLOW);
     Constants.colorMapping.put(SpinnerColor.YELLOW, SpinnerColor.GREEN);
@@ -84,41 +87,41 @@ public class RobotContainer {
    * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+
+    /**
+     * This year we are opting for 2 drivers, (tentatively) one for drivetrain
+     * movement such as positioning and rotation and the other for everthing else
+     * (such as intake, launching, etc)
+     */
+
+    /**
+     * Swerve driver
+     */
     getResetGyroButton()
         .whenPressed(new InstantCommand(() -> DrivetrainSubsystem.getInstance().resetGyroAngle(Rotation2.ZERO)));
+    this.swerveController.getAButton().whileHeld(new RotateAndAimCommandGroup());
 
-    this.controller.getAButton().whileHeld(new RotateAndAimCommandGroup());
-
-    // this.controller.getAButton().whileHeld(new GetInRangeAndAimCommand());
-
-    // this.controller.getBButton().whileHeld(new RotateToAngleCommand(0));
-    this.controller.getBButton().whileHeld(new RotateToTargetCommand(Direction.RIGHT));
-
-    this.controller.getStartButton().toggleWhenPressed(new SequentialCommandGroup(new LaunchFromDistanceCommand()));
-
-    // this.controller.getYButton().toggleWhenActive(new SpinToColorCommand());
-
-    // this.controller.getXButton().toggleWhenPressed(new
-    // SpinForRevolutionsCommand(1));
+    /**
+     * Maniuplator(s) driver: They are responsible for launcher, intake, spin system
+     * and climb
+     */
+    manipulatorController.getAButton().toggleWhenActive(new LaunchUpperCommand());
+    manipulatorController.getBButton().toggleWhenActive(new LaunchLowerCommand());
+    manipulatorController.getLeftTriggerAxis().whileHeld(new IntakeOutCommand());
+    manipulatorController.getRightTriggerAxis().whileHeld(new IntakeInCommand());
+    manipulatorController.getRightBumperButton().whileHeld(new ClimbCommand(Direction.UP));
+    manipulatorController.getLeftBumperButton().whileHeld(new ClimbCommand(Direction.DOWN));
+    manipulatorController.getLeftJoystickButton().whileHeld(new ClimbCommand(Direction.LEFT));
+    manipulatorController.getRightJoystickButton().whileHeld(new ClimbCommand(Direction.RIGHT));
+    manipulatorController.getXButton().toggleWhenPressed(new SpinToColorCommand());
+    manipulatorController.getYButton().toggleWhenPressed(new SpinForRevolutionsCommand(4));
   }
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return null;
-  }
-
-  public Controller getPrimaryController() {
-    return controller;
+  public Controller getSwerveController() {
+    return swerveController;
   }
 
   public SpinnerColor getSpinnerColor() {
-    // System.out.println("Called spinner color");
-    // System.out.println(this.spinnerColor);
     return this.spinnerColor;
   }
 
@@ -127,19 +130,19 @@ public class RobotContainer {
   }
 
   public Axis getDriveForwardAxis() {
-    return controller.getLeftYAxis();
+    return swerveController.getLeftYAxis();
   }
 
   public Axis getDriveStrafeAxis() {
-    return controller.getLeftXAxis();
+    return swerveController.getLeftXAxis();
   }
 
   public Axis getDriveRotationAxis() {
-    return controller.getRightXAxis();
+    return swerveController.getRightXAxis();
   }
 
   public Button getResetGyroButton() {
-    return controller.getBackButton();
+    return swerveController.getBackButton();
   }
 
 }

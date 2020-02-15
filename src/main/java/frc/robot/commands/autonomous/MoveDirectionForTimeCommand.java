@@ -31,48 +31,48 @@ public class MoveDirectionForTimeCommand extends WaitCommand {
     this.direction = direction;
     drive = DrivetrainSubsystem.getInstance();
     addRequirements(drive);
-    switch(direction) {
-      case FORWARD:
-        strafe = 0;
-        forward = .5;
-        break;
+    switch (direction) {
+    case BACKWARD:
+      strafe = 0;
+      forward = .5;
+      break;
 
-      case BACKWARD:
-        strafe = 0;
-        forward = -.5;
-        break;
+    case FORWARD:
+      strafe = 0;
+      forward = -.5;
+      break;
 
-      case RIGHT:
-        strafe = -.5;
-        forward = 0;
-        break;
-    
-      case LEFT:
-        strafe = .5;
-        forward = 0;
-        break;
-      
-      default:
-        strafe = 0;
-        forward = 0;
-        break;
+    case RIGHT:
+      strafe = -.5;
+      forward = 0;
+      break;
+
+    case LEFT:
+      strafe = .5;
+      forward = 0;
+      break;
+
+    default:
+      strafe = 0;
+      forward = 0;
+      break;
     }
   }
 
   // Called when the command is initially scheduled.
   // @Override
   // public void initialize() {
-      
+
   // }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    // System.out.println(forward + "   " + strafe);
+    // System.out.println(forward + " " + strafe);
     // for now, no rotation but we'll switch something up later
-    
-      drive.drive(new Vector2(forward, strafe), 0, true);
-    
+
+    drive.drive(new Vector2(forward, strafe), 0, true);
+
   }
 
   // Called once the command ends or is interrupted.

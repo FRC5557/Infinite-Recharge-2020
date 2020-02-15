@@ -9,11 +9,14 @@ This will be the main repo for the 2020 season. Any contributions made by team m
 - [x] Update Limelight
 - [x] Re-zero the swerve angle motors
 - [x] Get new trackwitdh + length for competition robot
-- [ ] Map out competition robot ports + button layout
+- [x] Map out competition robot ports + button layout
 
 ## Competition checklist:
 
 - [ ] Make sure Roborio is on latest version
 - [ ] Calibrate limelight
 - [ ] Calibrate color sensor
-- [ ] Re apply thread locker to swerve 
+- [ ] Re apply thread locker to swerve
+- [ ] Clean swerve modules
+
+Also, a massive thank you to FRC team 2910 for their fantastic "common" library (https://github.com/frcTeam2910/Common/) which has made most of the code in this repo possible!

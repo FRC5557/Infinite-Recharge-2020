@@ -69,7 +69,7 @@ public class GetInRangeAndAimCommand extends CommandBase {
   @Override
   public void execute() {
     if (limelight.hasTarget()) {
-      Robot.getRobotContainer().getPrimaryController().setRumble(RumbleType.kLeftRumble, 0.0);
+      Robot.getRobotContainer().getSwerveController().setRumble(RumbleType.kLeftRumble, 0.0);
 
       /**
        * First things first is to calculate distance from target and move towards it
@@ -132,7 +132,7 @@ public class GetInRangeAndAimCommand extends CommandBase {
       // this.isAligned = true;
       // }
     } else {
-      Robot.getRobotContainer().getPrimaryController().setRumble(RumbleType.kLeftRumble, 0.5);
+      Robot.getRobotContainer().getSwerveController().setRumble(RumbleType.kLeftRumble, 0.5);
     }
 
   }
@@ -144,7 +144,7 @@ public class GetInRangeAndAimCommand extends CommandBase {
     drive.stop();
     limelight.enableDriverMode();
     limelight.disableLEDs();
-    Robot.getRobotContainer().getPrimaryController().setRumble(RumbleType.kLeftRumble, 0.0);
+    Robot.getRobotContainer().getSwerveController().setRumble(RumbleType.kLeftRumble, 0.0);
 
   }
 
