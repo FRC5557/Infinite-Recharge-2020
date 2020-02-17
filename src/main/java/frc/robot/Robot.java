@@ -51,6 +51,8 @@ import frc.robot.commands.autonomous.*;
 import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.SpinnerSubsystem;
 import frc.robot.subsystems.swerve.DrivetrainSubsystem;
+import frc.robot.subsystems.swerve.SwerveDrivetrain;
+import net.bancino.robotics.swerveio.commands.PathweaverSwerveDrive;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -135,6 +137,10 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     autonomousCommand = autonomousModes.getSelected();
     autonomousCommand.schedule();
+
+    // new PathweaverSwerveDrive(SwerveDrivetrain.getInstance(),
+    // "5ball.wpilib.json").schedule();
+
   }
 
   /**

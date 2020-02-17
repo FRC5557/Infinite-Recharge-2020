@@ -120,6 +120,11 @@ public final class Constants {
 
     public static final double OPTIMAL_DISTANCE_FROM_POWER_PORT = 3;
 
+    public static final double SWERVE_MODULE_RAMP_RATE = 0;
+    public static final double SWERVE_MODULE_P = 0.003;
+    public static final double SWERVE_MODULE_I = 0.00000155;
+    public static final double SWERVE_MODULE_D = 0;
+
     public Constants() {
 
         // verify that these are correct

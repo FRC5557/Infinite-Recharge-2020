@@ -1,0 +1,24 @@
+{
+    "cppDependencies": [],
+    "fileName": "Team6090.json",
+    "javaDependencies": [
+        {
+            "artifactId": "JLimelight",
+            "groupId": "net.bancino.robotics",
+            "version": "1.1.1"
+        },
+        {
+            "artifactId": "SwerveIO",
+            "groupId": "net.bancino.robotics",
+            "version": "2.0.3"
+        }
+    ],
+    "jniDependencies": [],
+    "jsonUrl": "https://team6090.bancino.net/Team6090.json",
+    "mavenUrls": [
+        "https://team6090.bancino.net/maven/"
+    ],
+    "name": "Team6090",
+    "uuid": "b6ef44ee-67ef-4886-a3c9-2d5391a0c75a",
+    "version": "1.0.6"
+}
