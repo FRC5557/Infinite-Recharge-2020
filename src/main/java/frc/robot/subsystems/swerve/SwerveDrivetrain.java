@@ -83,10 +83,10 @@ public class SwerveDrivetrain extends SwerveDrive {
             // REAR_RIGHT_ENCODER_OFFSET);
 
             /* The encoder offsets tell us where zero is for each motor. */
-            private final double FRONT_RIGHT_ENCODER_OFFSET = 75.905 + 180;
-            private final double FRONT_LEFT_ENCODER_OFFSET = 163.376835;
-            private final double REAR_LEFT_ENCODER_OFFSET = 340.331861;
-            private final double REAR_RIGHT_ENCODER_OFFSET = 317.177098;
+            private final double FRONT_RIGHT_ENCODER_OFFSET = 100.307801 + 180;
+            private final double FRONT_LEFT_ENCODER_OFFSET = 195.434967 + 180;
+            private final double REAR_LEFT_ENCODER_OFFSET = 20.192584 + 180;
+            private final double REAR_RIGHT_ENCODER_OFFSET = 43.843779 + 180;
 
             private final AbstractEncoder frontRightEncoder = new AnalogEncoder(
                     Constants.DRIVETRAIN_FRONT_RIGHT_ANGLE_ENCODER, FRONT_RIGHT_ENCODER_OFFSET);

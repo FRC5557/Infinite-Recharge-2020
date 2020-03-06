@@ -45,7 +45,7 @@ public class SpinToColorCommand extends CommandBase {
   public void execute() {
     // so what we wanna do is just keep spinning the motor at a slow rate
     // System.out.println(requiredColor);
-    spinnerSubsystem.spinSpinner(-1);
+    spinnerSubsystem.spinSpinner(-.1);
   }
 
   // Called once the command ends or is interrupted.
@@ -57,6 +57,7 @@ public class SpinToColorCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
+    System.out.println(spinnerSubsystem.getColor());
 
     // return when color sensor value = desired color
     if( Robot.getRobotContainer().getSpinnerColor() == SpinnerColor.UNKNOWN

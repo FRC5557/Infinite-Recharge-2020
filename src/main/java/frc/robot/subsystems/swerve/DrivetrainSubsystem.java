@@ -59,15 +59,15 @@ public class DrivetrainSubsystem extends SubsystemBase implements UpdateManager.
   /**
    * Creates a new DrivetrainSubsystem.
    */
-  private static final double TRACKWIDTH = 29.75;
+  private static final double TRACKWIDTH = 30;
   private static final double WHEELBASE = 30;
 
   /**
    * These are the individual module offsets that represent their "zero" positions
    */
-  private static final double FRONT_LEFT_ANGLE_OFFSET = -Math.toRadians(163.376835);
-  private static final double FRONT_RIGHT_ANGLE_OFFSET = -Math.toRadians(75.905 + 180);
-  private static final double BACK_LEFT_ANGLE_OFFSET = -Math.toRadians(340.331861);
+  private static final double FRONT_LEFT_ANGLE_OFFSET = -Math.toRadians(30.179290);
+  private static final double FRONT_RIGHT_ANGLE_OFFSET = -Math.toRadians(156.568652);
+  private static final double BACK_LEFT_ANGLE_OFFSET = -Math.toRadians(166.602586 + 180);
   private static final double BACK_RIGHT_ANGLE_OFFSET = -Math.toRadians(317.177098);
 
   /**

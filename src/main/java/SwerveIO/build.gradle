@@ -1,0 +1,92 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'org.hidetake.ssh' version '2.10.1'
+}
+
+group = 'net.bancino.robotics'
+def artifact = 'SwerveIO'
+version = '2.1.0'
+sourceCompatibility = '11'
+targetCompatibility = '11'
+
+repositories {
+    jcenter()
+    /* This is for the WPILib and New commands, they aren't online officially. */
+    maven {
+        url 'https://team6090.bancino.net/maven'
+    }
+    /* RevRobotics */
+    maven {
+        url 'https://www.revrobotics.com/content/sw/max/sdk/maven/'
+    }
+}
+
+dependencies {
+    /* 
+     * WPILib is used for the SwerveDrive implementation,
+     * and can also be used by swerve module implementations too.
+     */
+    def wpiLibVersion = '2020.2.2'
+    implementation "edu.wpi.first.wpilibj:wpilibj-java:${wpiLibVersion}"
+    implementation "edu.wpi.first.wpilibNewCommands:wpilibNewCommands-java:${wpiLibVersion}"
+    
+    /*
+     * Specific implementations can declare their dependencies
+     * below.
+     *
+     * Spark Max is used to control NEO brushless motors.
+     */
+    def sparkMaxVersion = '1.5.1'
+    implementation "com.revrobotics.frc:SparkMax-java:${sparkMaxVersion}"
+    implementation "com.revrobotics.frc:SparkMax-driver:${sparkMaxVersion}"
+
+    /* NavX Gyro */
+    implementation 'com.kauailabs.navx.frc:navx-java:3.1.409'
+
+    /* Use JUnit Jupiter API for testing. */
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:+'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:+'
+}
+
+test {
+    /* Use junit platform for unit tests */
+    useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = artifact
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url = "$buildDir/repo"
+        }
+    }
+}
+
+remotes {
+    webServer {
+        host = 'bancino.net'
+        if (project.hasProperty('sshUser')) {
+            user = project.getProperty('sshUser')
+        }
+        if (project.hasProperty('sshPass')) {
+            password = project.getProperty('sshPass')
+        }
+    }
+}
+
+task deployMaven {
+    dependsOn publish
+    doLast {
+        ssh.run {
+            session(remotes.webServer) {
+                put from: "$buildDir/repo/net", into: '/var/www/team6090/maven'
+            }
+        }
+    }
+}

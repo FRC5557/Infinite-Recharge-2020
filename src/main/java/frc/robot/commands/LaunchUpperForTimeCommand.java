@@ -9,10 +9,12 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LauncherSubsystem;
 
 public class LaunchUpperForTimeCommand extends WaitCommand {
   LauncherSubsystem launcher;
+  IntakeSubsystem intake;
 
   /**
    * Creates a new LanchUpperForTimeCommand.
@@ -20,7 +22,8 @@ public class LaunchUpperForTimeCommand extends WaitCommand {
   public LaunchUpperForTimeCommand(double time) {
     super(time);
     launcher = LauncherSubsystem.getInstance();
-    addRequirements(launcher);
+    intake = IntakeSubsystem.getInstance();
+    addRequirements(launcher, intake);
   }
 
   // Called when the command is initially scheduled.
@@ -31,15 +34,17 @@ public class LaunchUpperForTimeCommand extends WaitCommand {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    launcher.feedIn();
+   // launcher.feedIn();
     launcher.launchUpper();
+    intake.intakeSlow();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
     launcher.stop();
-    launcher.stopFeed();
+   // launcher.stopFeed();
+    intake.stop();
   }
 
 }

@@ -51,14 +51,13 @@ public class RotateToTargetCommand extends CommandBase {
       double desiredAngle = limelight.getAngleX();
       System.out.println(desiredAngle);
       double rotation = desiredAngle * kP;
-      System.out.println(desiredAngle);
       drive.drive(new Vector2(0, 0), rotation, true);
     } else {
       System.out.println("NO TARGET");
       if (direction == Direction.LEFT) {
-        drive.drive(new Vector2(0, 0), -0.05, true);
+        drive.drive(new Vector2(0, 0), -0.01, true);
       } else {
-        drive.drive(new Vector2(0, 0), 0.05, true);
+        drive.drive(new Vector2(0, 0), 0.01, true);
       }
     }
 
@@ -76,7 +75,10 @@ public class RotateToTargetCommand extends CommandBase {
   @Override
   public boolean isFinished() {
     // return false;
-    if (limelight.getAngleX() > -0.3 && limelight.getAngleX() < 0.3 && limelight.hasTarget()
+    /**
+     * Need to find the right threshold here 
+     */
+    if (limelight.getAngleX() > -0.01 && limelight.getAngleX() < 0.01 && limelight.hasTarget()
         && limelight.getAngleX() != 0) {
       System.out.println("Finished aiming");
       return true;

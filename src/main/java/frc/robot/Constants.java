@@ -66,11 +66,11 @@ public final class Constants {
     public static final double BACK_RIGHT_DRIVE_PER_REVOLUTION = 8.214309692382812;
 
     public static final int PRIMARY_JOYSTICK_PORT = 0;
-    public static final int SECONDARY_JOYSTICK_PORT = 0;
+    public static final int SECONDARY_JOYSTICK_PORT = 1;
 
-    public static final int LAUNCHER_MOTOR = 9;
+    public static final int LAUNCHER_MOTOR = 12;
 
-    public static final int INTAKE_MOTOR = 10;
+    public static final int INTAKE_MOTOR = 9;
 
     public static final int FEEDER_MOTOR = 11;
 
@@ -81,7 +81,7 @@ public final class Constants {
      * Spinner constants
      */
 
-    public static final int SPINNER_MOTOR = 12;
+    public static final int SPINNER_MOTOR = 10;
 
     // this is the counter for the encoder value per 1 motor revolution
     public static final double SPINNER_MOTOR_COUNTER_PER_REVOLUTION = 1;

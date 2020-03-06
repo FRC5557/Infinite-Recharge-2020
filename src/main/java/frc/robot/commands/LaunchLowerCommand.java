@@ -29,14 +29,14 @@ public class LaunchLowerCommand extends CommandBase {
 
     @Override
     public void execute() {
-        launcher.feedIn();
+     //   launcher.feedIn();
         launcher.launchLower();
     }
 
     @Override
     public void end(boolean interrupted) {
         launcher.stop();
-        launcher.stopFeed();
+        //launcher.stopFeed();
     }
 
     @Override

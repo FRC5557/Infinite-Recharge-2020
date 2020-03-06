@@ -11,14 +11,18 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandGroupBase;
 import frc.robot.Robot;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LauncherSubsystem;
 import frc.robot.Constants;
 
 public class LaunchUpperCommand extends CommandBase {
     LauncherSubsystem launcher;
+    IntakeSubsystem intake;
 
     public LaunchUpperCommand() {
         launcher = LauncherSubsystem.getInstance();
+        // intake = IntakeSubsystem.getInstance();
+
         addRequirements(launcher);
     }
 
@@ -29,14 +33,16 @@ public class LaunchUpperCommand extends CommandBase {
 
     @Override
     public void execute() {
-        launcher.feedIn();
+      //  launcher.feedIn();
         launcher.launchUpper();
+        // intake.intakeIn();
     }
 
     @Override
     public void end(boolean interrupted) {
         launcher.stop();
-        launcher.stopFeed();
+      //  launcher.stopFeed();
+        // intake.stop();
     }
 
     @Override

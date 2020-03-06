@@ -140,15 +140,15 @@ public void initialize(){
 public void execute(){
 
     
-    double limelightHeight = 8.85 ;                        //height of the center of the limelight camera lens
+    double limelightHeight = 44.00 ;                        //height of the center of the limelight camera lens
     final double powerportHeight = 90.25;               //height of center of reflective tape on powerport
     double dh = powerportHeight - limelightHeight;
  
     
     
-    double a1 = 38.3;                                  //angle at which the limelight is mounted
+    double a1 = 12.5;                                  //angle at which the limelight is mounted
     double a2 = Limelight.getInstance().getAngleY();    //Vertical Offset From Crosshair To Target
-    double dx = (dh/Math.tan(Math.toRadians(a1+a2)));                  //this is the distance that the limelight is from the face of the powerport
+    double dx = (dh/(Math.tan(Math.toRadians(a1+a2))));                  //this is the distance that the limelight is from the face of the powerport
     a2Tab.setDouble(a2);
     distanceTab.setDouble(dx);    
     // LauncherSubsystem.getInstance().launch(k);

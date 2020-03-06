@@ -53,11 +53,18 @@ public class IntakeSubsystem extends SubsystemBase {
   }
 
   public void intakeIn() {
-    intakePIDController.setReference(0.5, ControlType.kVelocity);
+    // intakePIDController.setReference(0.5, ControlType.kVelocity);
+    intakeMotor.set(-0.6);
+
+  }
+
+  public void intakeSlow() {
+    intakeMotor.set(-0.4);
   }
 
   public void intakeOut() {
-    intakePIDController.setReference(-0.5, ControlType.kVelocity);
+    // intakePIDController.setReference(-0.5, ControlType.kVelocity);
+    intakeMotor.set(0.4);
   }
 
   public void stop() {

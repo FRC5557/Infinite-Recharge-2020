@@ -9,6 +9,7 @@ package frc.robot;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.Map;
 
 import org.frcteam2910.common.math.Rotation2;
@@ -25,6 +26,7 @@ import org.frcteam2910.common.control.TrajectoryConstraint;
 // import org
 import org.frcteam2910.common.io.PathReader;
 
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -42,6 +44,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.DriveCommand;
+import frc.robot.commands.FeedInCommand;
+import frc.robot.commands.FeedOutForTimeCommand;
 import frc.robot.commands.IntakeInCommand;
 import frc.robot.commands.LaunchUpperForTimeCommand;
 import frc.robot.commands.RotateAndAimCommandGroup;
@@ -52,7 +56,9 @@ import frc.robot.subsystems.Limelight;
 import frc.robot.subsystems.SpinnerSubsystem;
 import frc.robot.subsystems.swerve.DrivetrainSubsystem;
 import frc.robot.subsystems.swerve.SwerveDrivetrain;
-import net.bancino.robotics.swerveio.commands.PathweaverSwerveDrive;
+import io.github.oblarg.oblog.Logger;
+// import net.bancino.robotics.swerveio.commands.PathweaverSwerveDrive;
+import net.bancino.robotics.swerveio.command.PathweaverSwerveDrive;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -71,7 +77,8 @@ public class Robot extends TimedRobot {
   private double lastTimestamp = 0.0;
   Trajectory autonTrajectory;
 
-  private final UpdateManager updateManager = new UpdateManager(DrivetrainSubsystem.getInstance());
+  // private final UpdateManager updateManager = new
+  // UpdateManager(DrivetrainSubsystem.getInstance());
 
   SendableChooser<Command> autonomousModes;
   Command autonomousCommand;
@@ -95,6 +102,7 @@ public class Robot extends TimedRobot {
     // DrivetrainSubsystem.getInstance().drive(Vector2.ZERO, 0, true);
     Limelight.getInstance().disableLEDs();
     Limelight.getInstance().enableDriverMode();
+    // CameraServer.getInstance().startAutomaticCapture();
   }
 
   /**
@@ -116,6 +124,8 @@ public class Robot extends TimedRobot {
     // robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+    // Logger.updateEntries();
+
   }
 
   /**
@@ -135,11 +145,19 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    DrivetrainSubsystem.getInstance().resetGyroAngle(Rotation2.ZERO);
+
     autonomousCommand = autonomousModes.getSelected();
     autonomousCommand.schedule();
 
-    // new PathweaverSwerveDrive(SwerveDrivetrain.getInstance(),
-    // "5ball.wpilib.json").schedule();
+    
+
+    // try {
+    //   new PathweaverSwerveDrive(SwerveDrivetrain.getInstance(), "StraightLine.wpilib.json").schedule();
+    // } catch (IOException e) {
+    //   // TODO Auto-generated catch block
+    //   e.printStackTrace();
+    // }
 
   }
 
@@ -158,6 +176,9 @@ public class Robot extends TimedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
+    
+    Limelight.getInstance().enableDriverMode();
+    Limelight.getInstance().disableLEDs();
 
     CommandScheduler.getInstance().setDefaultCommand(DrivetrainSubsystem.getInstance(), new DriveCommand());
 
@@ -230,13 +251,16 @@ public class Robot extends TimedRobot {
 
     autonomousModes.addOption("Start From Right",
         new SequentialCommandGroup(new MoveDirectionForTimeCommand(.5, Direction.BACKWARD),
-            new RotateToTargetCommand(Direction.RIGHT), new LaunchUpperForTimeCommand(5)));
+            new RotateToTargetCommand(Direction.RIGHT), new FeedOutForTimeCommand(0.5), new ParallelRaceGroup(new FeedOutForTimeCommand(1), new LaunchUpperForTimeCommand(1)), new ParallelRaceGroup(new FeedInCommand(), new LaunchUpperForTimeCommand(5))));
     autonomousModes.addOption("Start From Left",
         new SequentialCommandGroup(new MoveDirectionForTimeCommand(.5, Direction.BACKWARD),
-            new RotateToTargetCommand(Direction.LEFT), new LaunchUpperForTimeCommand(5)));
+            new RotateToTargetCommand(Direction.LEFT), new FeedOutForTimeCommand(0.5), new ParallelRaceGroup(new FeedOutForTimeCommand(1), new LaunchUpperForTimeCommand(1)), new ParallelRaceGroup(new FeedInCommand(), new LaunchUpperForTimeCommand(5))));
     autonomousModes.addOption("Start From Middle",
-        new SequentialCommandGroup(new MoveDirectionForTimeCommand(.5, Direction.BACKWARD),
+        new SequentialCommandGroup(new MoveDirectionForTimeCommand(.5, Direction.FORWARD),
             new RotateToTargetCommand(Direction.LEFT), new LaunchUpperForTimeCommand(5)));
+    autonomousModes.addOption("Start From Right, Move Forward",
+    new SequentialCommandGroup(new MoveDirectionForTimeCommand(.5, Direction.FORWARD),
+        new RotateToTargetCommand(Direction.RIGHT), new FeedOutForTimeCommand(0.5), new ParallelRaceGroup(new FeedOutForTimeCommand(1), new LaunchUpperForTimeCommand(1)), new ParallelRaceGroup(new FeedInCommand(), new LaunchUpperForTimeCommand(5))));
     tab.add("Autonomous Mode", autonomousModes).withWidget(BuiltInWidgets.kComboBoxChooser);
     timeBack = tab.add("Time to move back", 5).withWidget(BuiltInWidgets.kNumberSlider)
         .withProperties(Map.of("min", .1, "max", 2)).getEntry();
