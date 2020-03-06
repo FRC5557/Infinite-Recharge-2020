@@ -21,8 +21,13 @@ public class LaunchUpperForTimeCommand extends WaitCommand {
    */
   public LaunchUpperForTimeCommand(double time) {
     super(time);
-    launcher = LauncherSubsystem.getInstance();
     intake = IntakeSubsystem.getInstance();
+    launcher = LauncherSubsystem.getInstance();
+<<<<<<< HEAD
+    intake = IntakeSubsystem.getInstance();
+=======
+
+>>>>>>> 4886060262f9943a7b298ce7710b3dfe97ec4ac8
     addRequirements(launcher, intake);
   }
 
@@ -34,7 +39,8 @@ public class LaunchUpperForTimeCommand extends WaitCommand {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-   // launcher.feedIn();
+    // intake.intakeIn();
+    // launcher.feedIn();
     launcher.launchUpper();
     intake.intakeSlow();
   }
@@ -42,6 +48,7 @@ public class LaunchUpperForTimeCommand extends WaitCommand {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    intake.stop();
     launcher.stop();
    // launcher.stopFeed();
     intake.stop();
