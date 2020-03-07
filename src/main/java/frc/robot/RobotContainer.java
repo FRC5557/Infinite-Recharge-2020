@@ -66,21 +66,27 @@ public class RobotContainer {
 
     // Logger.configureLoggingAndConfig(this, false);
 
-
     // SwerveDrivetrain.getInstance().startLogging(new DashboardSwerveLogger());
 
     // this starts the update thread for swerve drive
     updateManager.startLoop(5.0e-3);
 
-    // SwerveDrivetrain.getInstance().setDefaultCommand(new SwerveDriveTeleop(SwerveDrivetrain.getInstance(),
-    //     new edu.wpi.first.wpilibj.XboxController(Constants.PRIMARY_JOYSTICK_PORT)));
+    // SwerveDrivetrain.getInstance().setDefaultCommand(new
+    // SwerveDriveTeleop(SwerveDrivetrain.getInstance(),
+    // new edu.wpi.first.wpilibj.XboxController(Constants.PRIMARY_JOYSTICK_PORT)));
 
-    // edu.wpi.first.wpilibj.XboxController controller = new edu.wpi.first.wpilibj.XboxController(Constants.PRIMARY_JOYSTICK_PORT);
-    // new JoystickButton(controller, 7).whenPressed(new InstantCommand(() -> {System.out.println("Reset angle"); SwerveDrivetrain.getInstance().setIdleAngle(0, false);}));
-    // SwerveDriveCommand swerveDriveTeleop = new SwerveDriveCommand(SwerveDrivetrain.getInstance(), controller, edu.wpi.first.wpilibj.XboxController.Axis.kLeftX, edu.wpi.first.wpilibj.XboxController.Axis.kLeftY, edu.wpi.first.wpilibj.XboxController.Axis.kRightX);
+    // edu.wpi.first.wpilibj.XboxController controller = new
+    // edu.wpi.first.wpilibj.XboxController(Constants.PRIMARY_JOYSTICK_PORT);
+    // new JoystickButton(controller, 7).whenPressed(new InstantCommand(() ->
+    // {System.out.println("Reset angle");
+    // SwerveDrivetrain.getInstance().setIdleAngle(0, false);}));
+    // SwerveDriveCommand swerveDriveTeleop = new
+    // SwerveDriveCommand(SwerveDrivetrain.getInstance(), controller,
+    // edu.wpi.first.wpilibj.XboxController.Axis.kLeftX,
+    // edu.wpi.first.wpilibj.XboxController.Axis.kLeftY,
+    // edu.wpi.first.wpilibj.XboxController.Axis.kRightX);
     // // swerveDriveTeleop.setThrottle(0.4);
     // SwerveDrivetrain.getInstance().setDefaultCommand(swerveDriveTeleop);
-    
 
     // Configure the controls for swerve drive
     swerveController.getLeftXAxis().setInverted(false);
@@ -125,8 +131,10 @@ public class RobotContainer {
      * Maniuplator(s) driver: They are responsible for launcher, intake, spin system
      * and climb
      */
-    manipulatorController.getAButton().whileHeld(new LaunchUpperCommand());
-    // manipulatorController.getXButton().toggleWhenActive(new SequentialCommandGroup(new ParallelRaceGroup(new FeedOutForTimeCommand(1), new LaunchUpperCommand()), new LaunchUpperCommand()));
+    manipulatorController.getAButton().whileHeld(new LaunchFromDistanceCommand());
+    // manipulatorController.getXButton().toggleWhenActive(new
+    // SequentialCommandGroup(new ParallelRaceGroup(new FeedOutForTimeCommand(1),
+    // new LaunchUpperCommand()), new LaunchUpperCommand()));
     manipulatorController.getBButton().toggleWhenActive(new LaunchLowerCommand());
     manipulatorController.getXButton().whileHeld(new HoldLauncherCommand());
     manipulatorController.getYButton().whileHeld(new FeedLauncherCommand());
@@ -134,11 +142,12 @@ public class RobotContainer {
     manipulatorController.getRightTriggerAxis().whileHeld(new IntakeInCommand());
     manipulatorController.getRightBumperButton().whileHeld(new ClimbCommand(Direction.UP));
     manipulatorController.getLeftBumperButton().whileHeld(new ClimbCommand(Direction.DOWN));
-     manipulatorController.getLeftJoystickButton().whileHeld(new ClimbCommand(Direction.LEFT));
-     manipulatorController.getRightJoystickButton().whileHeld(new ClimbCommand(Direction.RIGHT));
-     manipulatorController.getDPadButton(DPadButton.Direction.UP).toggleWhenActive(new LaunchFromDistanceCommand());
+    manipulatorController.getLeftJoystickButton().whileHeld(new ClimbCommand(Direction.LEFT));
+    manipulatorController.getRightJoystickButton().whileHeld(new ClimbCommand(Direction.RIGHT));
+    manipulatorController.getDPadButton(DPadButton.Direction.UP).toggleWhenActive(new LaunchFromDistanceCommand());
     // swerveController.getXButton().toggleWhenPressed(new SpinToColorCommand());
-    // manipulatorController.getYButton().toggleWhenPressed(new SpinForRevolutionsCommand(4));
+    // manipulatorController.getYButton().toggleWhenPressed(new
+    // SpinForRevolutionsCommand(4));
   }
 
   public Controller getSwerveController() {

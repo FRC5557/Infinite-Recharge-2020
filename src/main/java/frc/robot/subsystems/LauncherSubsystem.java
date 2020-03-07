@@ -39,7 +39,8 @@ public class LauncherSubsystem extends SubsystemBase {
     this.launcherMotor = new CANSparkMax(Constants.LAUNCHER_MOTOR, MotorType.kBrushless);
     this.launcherPIDController = launcherMotor.getPIDController();
     this.feederMotor = new CANSparkMax(Constants.FEEDER_MOTOR, MotorType.kBrushless);
-    // this.feederMotor = new CANSparkMax(Constants.FEEDER_MOTOR, MotorType.kBrushless);
+    // this.feederMotor = new CANSparkMax(Constants.FEEDER_MOTOR,
+    // MotorType.kBrushless);
 
     kP = 5e-5;
     kI = 1e-6;
@@ -72,6 +73,10 @@ public class LauncherSubsystem extends SubsystemBase {
     launcherMotor.set(-0.2);
   }
 
+  public void launchForSpeed(double speed) {
+    launcherMotor.set(speed);
+  }
+
   public CANSparkMax getLauncherMotor() {
     return this.launcherMotor;
   }
@@ -79,20 +84,15 @@ public class LauncherSubsystem extends SubsystemBase {
   public void stop() {
     launcherMotor.set(0);
   }
-/*
-  public void feedIn() {
-    feederMotor.set(-.20);
-  }
 
-  public void feedOut() {
-    feederMotor.set(.20);
-  }
-
-
-  public void stopFeed() {
-    feederMotor.set(0);
-  }
-*/
+  /*
+   * public void feedIn() { feederMotor.set(-.20); }
+   * 
+   * public void feedOut() { feederMotor.set(.20); }
+   * 
+   * 
+   * public void stopFeed() { feederMotor.set(0); }
+   */
   public void launch(double speed) {
     launcherMotor.set(speed);
   }
