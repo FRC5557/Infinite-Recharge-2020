@@ -26,9 +26,7 @@ public class LauncherSubsystem extends SubsystemBase {
     return instance;
   }
 
-  private CANSparkMax launcherMotor, feederMotor;
-  private CANPIDController launcherPIDController;
-  public double kP, kI, kD, kIz, kFF, kMaxOutput, kMinOutput, maxRPM;
+  private CANSparkMax launcherMotor, secondLauncherMotor;
 
   // private CANSparkMax feederMotor;
 
@@ -37,26 +35,10 @@ public class LauncherSubsystem extends SubsystemBase {
    */
   public LauncherSubsystem() {
     this.launcherMotor = new CANSparkMax(Constants.LAUNCHER_MOTOR, MotorType.kBrushless);
-    this.launcherPIDController = launcherMotor.getPIDController();
-    this.feederMotor = new CANSparkMax(Constants.FEEDER_MOTOR, MotorType.kBrushless);
+    this.secondLauncherMotor = new CANSparkMax(Constants.SECOND_LAUNCHER_MOTOR, MotorType.kBrushless);
     // this.feederMotor = new CANSparkMax(Constants.FEEDER_MOTOR,
     // MotorType.kBrushless);
 
-    kP = 5e-5;
-    kI = 1e-6;
-    kD = 0;
-    kIz = 0;
-    kFF = 0;
-    kMaxOutput = 1;
-    kMinOutput = -1;
-    maxRPM = 5700;
-
-    launcherPIDController.setP(kP);
-    launcherPIDController.setI(kI);
-    launcherPIDController.setD(kD);
-    launcherPIDController.setIZone(kIz);
-    launcherPIDController.setFF(kFF);
-    launcherPIDController.setOutputRange(kMinOutput, kMaxOutput);
   }
 
   public void launchUpper() {
@@ -65,16 +47,18 @@ public class LauncherSubsystem extends SubsystemBase {
     // launcherMotor.set(-.78);
     // launcherMotor.set(-0.82);
     launcherMotor.set(-0.9);
-
+    secondLauncherMotor.set(-0.9);
   }
 
   public void launchLower() {
     // launcherPIDController.setReference(0.5, ControlType.kVelocity);
     launcherMotor.set(-0.2);
+    secondLauncherMotor.set(-0.2);
   }
 
   public void launchForSpeed(double speed) {
     launcherMotor.set(speed);
+    secondLauncherMotor.set(speed);
   }
 
   public CANSparkMax getLauncherMotor() {
@@ -83,6 +67,7 @@ public class LauncherSubsystem extends SubsystemBase {
 
   public void stop() {
     launcherMotor.set(0);
+    secondLauncherMotor.set(0);
   }
 
   /*
