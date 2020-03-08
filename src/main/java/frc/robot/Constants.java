@@ -69,6 +69,7 @@ public final class Constants {
     public static final int SECONDARY_JOYSTICK_PORT = 1;
 
     public static final int LAUNCHER_MOTOR = 12;
+    public static final int SECOND_LAUNCHER_MOTOR = 15;
 
     public static final int INTAKE_MOTOR = 9;
 

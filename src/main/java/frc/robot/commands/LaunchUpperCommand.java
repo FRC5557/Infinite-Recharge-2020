@@ -23,6 +23,7 @@ public class LaunchUpperCommand extends CommandBase {
         launcher = LauncherSubsystem.getInstance();
         // intake = IntakeSubsystem.getInstance();
         addRequirements(launcher);
+
     }
 
     @Override
@@ -32,7 +33,7 @@ public class LaunchUpperCommand extends CommandBase {
 
     @Override
     public void execute() {
-      //  launcher.feedIn();
+        // launcher.feedIn();
         launcher.launchUpper();
         // intake.intakeIn();
     }
@@ -41,7 +42,7 @@ public class LaunchUpperCommand extends CommandBase {
     public void end(boolean interrupted) {
         // intake.stop();
         launcher.stop();
-      //  launcher.stopFeed();
+        // launcher.stopFeed();
         // intake.stop();
     }
 
