@@ -41,10 +41,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.FeedInCommand;
+import frc.robot.commands.FeedInForTimeCommand;
 import frc.robot.commands.FeedOutForTimeCommand;
 import frc.robot.commands.IntakeInCommand;
 import frc.robot.commands.LaunchUpperForTimeCommand;
@@ -150,13 +152,12 @@ public class Robot extends TimedRobot {
     autonomousCommand = autonomousModes.getSelected();
     autonomousCommand.schedule();
 
-    
-
     // try {
-    //   new PathweaverSwerveDrive(SwerveDrivetrain.getInstance(), "StraightLine.wpilib.json").schedule();
+    // new PathweaverSwerveDrive(SwerveDrivetrain.getInstance(),
+    // "StraightLine.wpilib.json").schedule();
     // } catch (IOException e) {
-    //   // TODO Auto-generated catch block
-    //   e.printStackTrace();
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
     // }
 
   }
@@ -176,7 +177,7 @@ public class Robot extends TimedRobot {
     if (autonomousCommand != null) {
       autonomousCommand.cancel();
     }
-    
+
     Limelight.getInstance().enableDriverMode();
     Limelight.getInstance().disableLEDs();
 
@@ -197,26 +198,26 @@ public class Robot extends TimedRobot {
     gameData = DriverStation.getInstance().getGameSpecificMessage();
     if (gameData.length() > 0) {
       switch (gameData.charAt(0)) {
-      case 'B':
-        // Blue case code
-        robotContainer.setSpinnerColor(SpinnerColor.BLUE);
-        break;
-      case 'G':
-        // Green case code
-        robotContainer.setSpinnerColor(SpinnerColor.GREEN);
-        break;
-      case 'R':
-        // Red case code
-        robotContainer.setSpinnerColor(SpinnerColor.RED);
-        break;
-      case 'Y':
-        // Yellow case code
-        robotContainer.setSpinnerColor(SpinnerColor.YELLOW);
-        break;
-      default:
-        // This is corrupt data
-        robotContainer.setSpinnerColor(SpinnerColor.UNKNOWN);
-        break;
+        case 'B':
+          // Blue case code
+          robotContainer.setSpinnerColor(SpinnerColor.BLUE);
+          break;
+        case 'G':
+          // Green case code
+          robotContainer.setSpinnerColor(SpinnerColor.GREEN);
+          break;
+        case 'R':
+          // Red case code
+          robotContainer.setSpinnerColor(SpinnerColor.RED);
+          break;
+        case 'Y':
+          // Yellow case code
+          robotContainer.setSpinnerColor(SpinnerColor.YELLOW);
+          break;
+        default:
+          // This is corrupt data
+          robotContainer.setSpinnerColor(SpinnerColor.UNKNOWN);
+          break;
       }
     } else {
       // Code for no data received yet
@@ -251,16 +252,42 @@ public class Robot extends TimedRobot {
 
     autonomousModes.addOption("Start From Right",
         new SequentialCommandGroup(new MoveDirectionForTimeCommand(.5, Direction.BACKWARD),
-            new RotateToTargetCommand(Direction.RIGHT), new FeedOutForTimeCommand(0.5), new ParallelRaceGroup(new FeedOutForTimeCommand(1), new LaunchUpperForTimeCommand(1)), new ParallelRaceGroup(new FeedInCommand(), new LaunchUpperForTimeCommand(5))));
+            new RotateToTargetCommand(Direction.RIGHT),
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(new FeedOutForTimeCommand(1), new FeedInForTimeCommand(5)),
+                new LaunchUpperForTimeCommand(6))));
+
     autonomousModes.addOption("Start From Left",
         new SequentialCommandGroup(new MoveDirectionForTimeCommand(.5, Direction.BACKWARD),
-            new RotateToTargetCommand(Direction.LEFT), new FeedOutForTimeCommand(0.5), new ParallelRaceGroup(new FeedOutForTimeCommand(1), new LaunchUpperForTimeCommand(1)), new ParallelRaceGroup(new FeedInCommand(), new LaunchUpperForTimeCommand(5))));
+            new RotateToTargetCommand(Direction.LEFT),
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(new FeedOutForTimeCommand(1), new FeedInForTimeCommand(5)),
+                new LaunchUpperForTimeCommand(6))));
+
     autonomousModes.addOption("Start From Middle",
-        new SequentialCommandGroup(new MoveDirectionForTimeCommand(.5, Direction.FORWARD),
-            new RotateToTargetCommand(Direction.LEFT), new LaunchUpperForTimeCommand(5)));
+        new SequentialCommandGroup(new MoveDirectionForTimeCommand(.5, Direction.BACKWARD),
+            new RotateToTargetCommand(Direction.RIGHT),
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(new FeedOutForTimeCommand(1), new FeedInForTimeCommand(5)),
+                new LaunchUpperForTimeCommand(6))));
     autonomousModes.addOption("Start From Right, Move Forward",
-    new SequentialCommandGroup(new MoveDirectionForTimeCommand(.5, Direction.FORWARD),
-        new RotateToTargetCommand(Direction.RIGHT), new FeedOutForTimeCommand(0.5), new ParallelRaceGroup(new FeedOutForTimeCommand(1), new LaunchUpperForTimeCommand(1)), new ParallelRaceGroup(new FeedInCommand(), new LaunchUpperForTimeCommand(5))));
+        new SequentialCommandGroup(new MoveDirectionForTimeCommand(.5, Direction.FORWARD),
+            new RotateToTargetCommand(Direction.RIGHT),
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(new FeedOutForTimeCommand(1), new FeedInForTimeCommand(5)),
+                new LaunchUpperForTimeCommand(6))));
+    autonomousModes.addOption("Start From Left, Move Forward",
+        new SequentialCommandGroup(new MoveDirectionForTimeCommand(.5, Direction.FORWARD),
+            new RotateToTargetCommand(Direction.LEFT),
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(new FeedOutForTimeCommand(1), new FeedInForTimeCommand(5)),
+                new LaunchUpperForTimeCommand(6))));
+    autonomousModes.addOption("Start From Middle, Move Forward",
+        new SequentialCommandGroup(new MoveDirectionForTimeCommand(.5, Direction.FORWARD),
+            new RotateToTargetCommand(Direction.RIGHT),
+            new ParallelCommandGroup(
+                new SequentialCommandGroup(new FeedOutForTimeCommand(1), new FeedInForTimeCommand(5)),
+                new LaunchUpperForTimeCommand(6))));
     tab.add("Autonomous Mode", autonomousModes).withWidget(BuiltInWidgets.kComboBoxChooser);
     timeBack = tab.add("Time to move back", 5).withWidget(BuiltInWidgets.kNumberSlider)
         .withProperties(Map.of("min", .1, "max", 2)).getEntry();
