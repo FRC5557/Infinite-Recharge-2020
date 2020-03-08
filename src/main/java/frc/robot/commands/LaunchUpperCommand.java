@@ -21,14 +21,8 @@ public class LaunchUpperCommand extends CommandBase {
 
     public LaunchUpperCommand() {
         launcher = LauncherSubsystem.getInstance();
-<<<<<<< HEAD
         // intake = IntakeSubsystem.getInstance();
-
         addRequirements(launcher);
-=======
-        intake = IntakeSubsystem.getInstance();
-        addRequirements(launcher, intake);
->>>>>>> 4886060262f9943a7b298ce7710b3dfe97ec4ac8
     }
 
     @Override
@@ -45,7 +39,7 @@ public class LaunchUpperCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        intake.stop();
+        // intake.stop();
         launcher.stop();
       //  launcher.stopFeed();
         // intake.stop();

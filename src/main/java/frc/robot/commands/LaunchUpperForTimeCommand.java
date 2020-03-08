@@ -23,11 +23,6 @@ public class LaunchUpperForTimeCommand extends WaitCommand {
     super(time);
     intake = IntakeSubsystem.getInstance();
     launcher = LauncherSubsystem.getInstance();
-<<<<<<< HEAD
-    intake = IntakeSubsystem.getInstance();
-=======
-
->>>>>>> 4886060262f9943a7b298ce7710b3dfe97ec4ac8
     addRequirements(launcher, intake);
   }
 

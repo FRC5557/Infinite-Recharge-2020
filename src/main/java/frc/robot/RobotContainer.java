@@ -119,13 +119,15 @@ public class RobotContainer {
      */
     getResetGyroButton()
         .whenPressed(new InstantCommand(() -> DrivetrainSubsystem.getInstance().resetGyroAngle(Rotation2.ZERO)));
-    // this.swerveController.getAButton().whileHeld(new RotateAndAimCommandGroup());
+    this.swerveController.getAButton().whileHeld(new RotateToTargetCommand(Direction.RIGHT));
+
+  
 
     /**
      * Maniuplator(s) driver: They are responsible for launcher, intake, spin system
      * and climb
      */
-    manipulatorController.getAButton().whileHeld(new LaunchUpperCommand());
+    manipulatorController.getAButton().toggleWhenPressed(new LaunchUpperCommand());
     // manipulatorController.getXButton().toggleWhenActive(new SequentialCommandGroup(new ParallelRaceGroup(new FeedOutForTimeCommand(1), new LaunchUpperCommand()), new LaunchUpperCommand()));
     manipulatorController.getBButton().toggleWhenActive(new LaunchLowerCommand());
     manipulatorController.getXButton().whileHeld(new HoldLauncherCommand());
