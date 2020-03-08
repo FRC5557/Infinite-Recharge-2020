@@ -47,18 +47,18 @@ public class LauncherSubsystem extends SubsystemBase {
     // launcherMotor.set(-.78);
     // launcherMotor.set(-0.82);
     launcherMotor.set(-0.9);
-    secondLauncherMotor.set(-0.9);
+    secondLauncherMotor.set(0.9);
   }
 
   public void launchLower() {
     // launcherPIDController.setReference(0.5, ControlType.kVelocity);
     launcherMotor.set(-0.2);
-    secondLauncherMotor.set(-0.2);
+    secondLauncherMotor.set(0.2);
   }
 
   public void launchForSpeed(double speed) {
     launcherMotor.set(speed);
-    secondLauncherMotor.set(speed);
+    secondLauncherMotor.set(-speed);
   }
 
   public CANSparkMax getLauncherMotor() {
